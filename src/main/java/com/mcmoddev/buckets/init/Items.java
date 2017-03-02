@@ -3,6 +3,7 @@ package com.mcmoddev.buckets.init;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.mcmoddev.buckets.items.ItemMMDBucket;
@@ -16,6 +17,14 @@ public class Items extends com.mcmoddev.lib.init.Items {
 	
 	protected static List<ItemMMDBucket> buckets = new ArrayList<>();
 
+	private static class BucketComparator implements Comparator<ItemMMDBucket> {
+		public int compare(ItemMMDBucket left, ItemMMDBucket right) {
+			String leftName = left.getMaterial().getName();
+			String rightName = right.getMaterial().getName();
+			return leftName.compareTo(rightName);			
+		}
+	}
+	
 	public static void init() {
 		Collection<MetalMaterial> materials = Materials.getAllMaterials();
 		
@@ -24,6 +33,8 @@ public class Items extends com.mcmoddev.lib.init.Items {
 				buckets.add(new ItemMMDBucket(Blocks.AIR, mat));
 			}
 		}
+		
+		Collections.sort(buckets, new BucketComparator());
 	}
 	
 	public static int getCount() {
