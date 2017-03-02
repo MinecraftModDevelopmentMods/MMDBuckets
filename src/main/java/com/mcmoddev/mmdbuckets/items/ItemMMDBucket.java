@@ -56,7 +56,7 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
 		this.base = mat;
 		this.setHasSubtypes(true);
 		this.setCreativeTab(CreativeTabs.MISC);
-		this.setRegistryName(MMDBuckets.MODID+":"+this.base.getName()+"_bucket");
+		this.setRegistryName(MMDBuckets.MODID+":bucket");
 		BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(this, DispenseMMDBucket.getInstance());
 	}
 
@@ -157,6 +157,9 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
             if (playerIn.canPlayerEdit(targetPos, mop.sideHit, itemIn)) {
                 // try placing liquid
                 if (FluidUtil.tryPlaceFluid(playerIn, playerIn.getEntityWorld(), fluidStack, targetPos) && !playerIn.capabilities.isCreativeMode) {
+					if(fluidStack.getFluid() == FluidRegistry.WATER || fluidStack.getFluid() == FluidRegistry.LAVA) {
+						worldIn.notifyBlockOfStateChange(targetPos, worldIn.getBlockState(targetPos).getBlock());
+					}
                     // success!
                     playerIn.addStat(StatList.getObjectUseStats(this));
 
@@ -198,10 +201,9 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
 		if( empty == null || !empty.getItem().equals(this) ) {
 			return;
 		}
-		MMDBuckets.logger.error("Filling Bucket");
+		
 		ItemStack bucket = empty.copy();
 		bucket.stackSize = 1;
-		MMDBuckets.logger.error("Bucket is: %s:%d", bucket.getItem(), bucket.getMetadata());
 		
 		RayTraceResult target = ev.getTarget();		
 		if( target == null || target.typeOfHit != RayTraceResult.Type.BLOCK ) {
