@@ -42,6 +42,8 @@ import com.mcmoddev.mmdbuckets.init.Items;
 public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDictionaryEntry, IMetalObject  {
 
 	private static int numBuckets = Items.getCount();	
+	private static final String FLUID_TAG = "mmdbucketfluids";
+	
 	private final MetalMaterial base;
 	
 	public ItemMMDBucket() {
@@ -173,7 +175,7 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
 	public FluidStack getFluid(ItemStack itemIn) {
 		NBTTagCompound tags = itemIn.getTagCompound();
 		if( tags != null ) {
-			return FluidStack.loadFluidStackFromNBT(tags);
+			return FluidStack.loadFluidStackFromNBT(tags.getCompoundTag(FLUID_TAG));
 		}
 		return null;
 	}
@@ -229,25 +231,17 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
 			return 0;
 		}
 		
-		if( FluidRegistry.getBucketFluids().contains(resource.getFluid())) {
+		if( FluidRegistry.getBucketFluids().contains(resource.getFluid()) ||
+				resource.getFluid() == FluidRegistry.WATER ||
+				resource.getFluid() == FluidRegistry.LAVA ) {
 			if( doFill ) {
 				NBTTagCompound t = container.getTagCompound();
 				if( t == null ) {
 					t = new NBTTagCompound();
 				}
 				
-				resource.writeToNBT(t);
+				t.setTag(FLUID_TAG, resource.writeToNBT( new NBTTagCompound() ));
 				container.setTagCompound(t);
-			}
-			return getCapacity();
-		} else if( resource.getFluid() == FluidRegistry.WATER ) {
-			if( doFill ) {
-				container.deserializeNBT(new ItemStack(net.minecraft.init.Items.WATER_BUCKET).serializeNBT());
-			}
-			return getCapacity();
-		} else if( resource.getFluid() == FluidRegistry.LAVA ) {
-			if( doFill ) {
-				container.deserializeNBT(new ItemStack(net.minecraft.init.Items.LAVA_BUCKET).serializeNBT());
 			}
 			return getCapacity();
 		}
@@ -262,7 +256,14 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
 		
 		FluidStack fluidStack = getFluid(container);
 		if( doDrain && fluidStack != null ) {
-			container.stackSize = 0;
+			NBTTagCompound tag = container.getTagCompound();
+			if( tag != null ) {
+				tag.removeTag(FLUID_TAG);
+			}
+			
+			if( tag.hasNoTags() ) {
+				container.setTagCompound(null);
+			}
 		}
 		return fluidStack;
 	}
