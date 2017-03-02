@@ -23,6 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -53,7 +54,8 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
 		setHasSubtypes(true);
 		setCreativeTab(CreativeTabs.MISC);
 		setMaxDamage(0);
-		setRegistryName("metalbucket."+mat.getName());		
+		setRegistryName("metalbucket."+mat.getName());
+		MinecraftForge.EVENT_BUS.register(this);
 	}
 	
 	@Override
