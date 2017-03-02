@@ -31,16 +31,21 @@ public class Items extends com.mcmoddev.lib.init.Items {
 	
 	public static void init() {
 		Collection<MetalMaterial> materials = Materials.getAllMaterials();
+		List<String> bucks = new ArrayList<>();
+		
 		MetalBucket = new ItemMMDBucket();
 		GameRegistry.register(MetalBucket);
 		
 		for( MetalMaterial mat : materials ) {
 			if( Config.get(mat.getName()) && mat.getType() == MaterialType.METAL ) {
-				buckets.add(new ItemMMDBucket(mat));
+				if( !bucks.contains(mat.getName()) ) {
+					bucks.add(mat.getName());
+					buckets.add(new ItemMMDBucket(mat));
+				}
 			}
 		}
 		
-		Collections.sort(buckets, new BucketComparator());
+		buckets.sort( new BucketComparator() );
 	}
 	
 	public static int getCount() {

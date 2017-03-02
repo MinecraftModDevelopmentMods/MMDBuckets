@@ -16,6 +16,7 @@ import net.minecraft.stats.StatList;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.translation.I18n;
@@ -36,6 +37,7 @@ import java.util.List;
 
 import com.mcmoddev.lib.material.IMetalObject;
 import com.mcmoddev.lib.registry.IOreDictionaryEntry;
+import com.mcmoddev.mmdbuckets.MMDBuckets;
 import com.mcmoddev.mmdbuckets.init.Items;
 
 @SuppressWarnings("deprecation")
@@ -52,12 +54,19 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
 
 	public ItemMMDBucket(MetalMaterial mat) {
 		this.base = mat;
-		this.setMaxStackSize(1);
 		this.setHasSubtypes(true);
 		this.setCreativeTab(CreativeTabs.MISC);
-		this.setMaxDamage(0);
-		this.setRegistryName("metalbucket."+mat.getName());
+		this.setRegistryName(MMDBuckets.MODID+":"+this.base.getName()+"_bucket");
 		BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(this, DispenseMMDBucket.getInstance());
+	}
+
+	@Override
+	public int getItemStackLimit( ItemStack stack ) {
+		if( getFluid(stack) == null ) {
+			return 16;
+		}
+		
+		return 1;
 	}
 	
 	@Override
@@ -77,7 +86,8 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
 
 	@Override
 	public String getUnlocalizedName(ItemStack stack) {
-		return "item.mmdbuckets."+ Items.getNameFromMeta(stack.getMetadata())+".bucket.name";
+		FluidStack fluid = getFluid(stack);
+		return "item.mmdbuckets."+ Items.getNameFromMeta(stack.getMetadata())+"."+(fluid==null?"empty":fluid.getFluid().getName())+".bucket.name";
 	}
 
 	@Override
@@ -87,9 +97,10 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
 			String unloc = "item.mmdbuckets.bucket.name";
 			String form = getUnlocalizedName(stack);
 			String name = mat.getCapitalizedName();
+			FluidStack fluid = getFluid(stack);
 			
 			if( I18n.canTranslate(unloc) )
-				return I18n.translateToLocalFormatted(unloc, name);
+				return I18n.translateToLocalFormatted(unloc, name, fluid == null?"empty":fluid.getFluid().getName());
 			
 			return form;
 		}
@@ -99,16 +110,11 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
 	@Override
 	public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
 		if( numBuckets == 0 ) {
-			Items.init();
 			numBuckets = Items.getCount();
 		}
 		
-		subItems.add(new ItemStack(itemIn));
 		for( int i = 0; i < numBuckets; i++ ) {
-			ItemStack x = new ItemStack(itemIn, 1, i);
-			if( !subItems.contains(x) ) {
-				subItems.add( x );
-			}
+			subItems.add( new ItemStack(itemIn, 1, i) );
 		}
 	}
 	
@@ -190,9 +196,10 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
 		if( empty == null || !empty.getItem().equals(this) ) {
 			return;
 		}
-		
+		MMDBuckets.logger.error("Filling Bucket");
 		ItemStack bucket = new ItemStack( new ItemMMDBucket(base), 1, Items.getMetaFromMaterialName(base.getName()) );
 		bucket.stackSize = 1;
+		MMDBuckets.logger.error("Bucket is: %s:%d", bucket.getItem(), bucket.getMetadata());
 		
 		RayTraceResult target = ev.getTarget();		
 		if( target == null || target.typeOfHit != RayTraceResult.Type.BLOCK ) {
@@ -218,7 +225,7 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
 	}
 
 	public int getCapacity() {
-		return 1000;
+		return Fluid.BUCKET_VOLUME;
 	}
 	
 	@Override
@@ -273,12 +280,4 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
     {
         return new MMDBucketWrapper(stack);
     }
-
-	public static ItemStack getFilledBucket(Fluid fluid) {
-		ItemMMDBucket item = new ItemMMDBucket();
-		ItemStack stack = new ItemStack(item);
-		item.fill(stack, new FluidStack(fluid, item.getCapacity()), true);
-		return stack;
-	}
-
 }

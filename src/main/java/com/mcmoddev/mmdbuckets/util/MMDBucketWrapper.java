@@ -1,9 +1,7 @@
 package com.mcmoddev.mmdbuckets.util;
 
-import javax.annotation.Nullable;
 
 import com.mcmoddev.mmdbuckets.init.Items;
-import com.mcmoddev.mmdbuckets.items.ItemMMDBucket;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
