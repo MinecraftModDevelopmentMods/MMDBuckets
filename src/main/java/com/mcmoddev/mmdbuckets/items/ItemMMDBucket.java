@@ -3,6 +3,8 @@ package com.mcmoddev.mmdbuckets.items;
 
 import com.mcmoddev.lib.material.MetalMaterial;
 import com.mcmoddev.mmdbuckets.init.Materials;
+import com.mcmoddev.mmdbuckets.util.DispenseMMDBucket;
+import com.mcmoddev.mmdbuckets.util.MMDBucketWrapper;
 
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.creativetab.CreativeTabs;
@@ -11,7 +13,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.stats.StatList;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
@@ -19,25 +20,22 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
-import net.minecraftforge.fluids.DispenseFluidContainer;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidContainerItem;
-import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.List;
 
-import com.mcmoddev.basemetals.init.Fluids;
 import com.mcmoddev.lib.material.IMetalObject;
 import com.mcmoddev.lib.registry.IOreDictionaryEntry;
-import com.mcmoddev.mmdbuckets.MMDBuckets;
 import com.mcmoddev.mmdbuckets.init.Items;
 
 @SuppressWarnings("deprecation")
@@ -57,7 +55,7 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
 		this.setCreativeTab(CreativeTabs.MISC);
 		this.setMaxDamage(0);
 		this.setRegistryName("metalbucket."+mat.getName());
-		BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(this, DispenseFluidContainer.getInstance());
+		BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(this, DispenseMMDBucket.getInstance());
 	}
 	
 	@Override
@@ -182,16 +180,22 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
 
 	@SubscribeEvent
 	public void onFillBucket(FillBucketEvent ev) {
-		if( ev.getResult() != Event.Result.DEFAULT ) return;
+		if( ev.getResult() != Event.Result.DEFAULT ) {
+			return;
+		}
 		
 		ItemStack empty = ev.getEmptyBucket();
-		if( empty == null || !empty.getItem().equals(this) ) return;
+		if( empty == null || !empty.getItem().equals(this) ) {
+			return;
+		}
 		
-		ItemStack bucket = empty.copy();
+		ItemStack bucket = new ItemStack( new ItemMMDBucket(base), 1, Items.getMetaFromMaterialName(base.getName()) );
 		bucket.stackSize = 1;
 		
 		RayTraceResult target = ev.getTarget();		
-		if( target == null || target.typeOfHit != RayTraceResult.Type.BLOCK ) return;
+		if( target == null || target.typeOfHit != RayTraceResult.Type.BLOCK ) {
+			return;
+		}
 		
 		World world = ev.getWorld();
 		BlockPos targetPos = target.getBlockPos();
@@ -263,4 +267,17 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
 		return fluidStack;
 	}
 	
+    @Override
+    public ICapabilityProvider initCapabilities(ItemStack stack, NBTTagCompound nbt)
+    {
+        return new MMDBucketWrapper(stack);
+    }
+
+	public static ItemStack getFilledBucket(Fluid fluid) {
+		ItemMMDBucket item = new ItemMMDBucket();
+		ItemStack stack = new ItemStack(item);
+		item.fill(stack, new FluidStack(fluid, item.getCapacity()), true);
+		return stack;
+	}
+
 }

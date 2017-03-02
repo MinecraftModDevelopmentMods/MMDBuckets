@@ -11,7 +11,6 @@ import com.mcmoddev.lib.material.MetalMaterial.MaterialType;
 import com.mcmoddev.mmdbuckets.items.ItemMMDBucket;
 import com.mcmoddev.mmdbuckets.util.Config;
 
-import net.minecraft.item.Item;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -19,7 +18,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public class Items extends com.mcmoddev.lib.init.Items {
 	
 	public static final Fluid[] FLUIDS = {FluidRegistry.WATER, FluidRegistry.LAVA};
-	public static Item MetalBucket = null;
+	public static ItemMMDBucket MetalBucket = null;
 	protected static List<ItemMMDBucket> buckets = new ArrayList<>();
 	
 	private static class BucketComparator implements Comparator<ItemMMDBucket> {
@@ -65,4 +64,13 @@ public class Items extends com.mcmoddev.lib.init.Items {
 		}
 		return buckets.get(metadata);
 	}	
+
+	public static int getMetaFromMaterialName( String name ) {
+		for( int i = 0; i < buckets.size(); i++ ) {
+			if( buckets.get(i).getMetalMaterial().getName().equals(name) ) {
+				return i;
+			}
+		}
+		return -1;
+	}
 }
