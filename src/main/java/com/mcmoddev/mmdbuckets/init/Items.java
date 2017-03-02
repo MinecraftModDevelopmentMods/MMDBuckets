@@ -1,6 +1,7 @@
 package com.mcmoddev.mmdbuckets.init;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,6 +21,7 @@ public class Items extends com.mcmoddev.lib.init.Items {
 	public static final Fluid[] FLUIDS = {FluidRegistry.WATER, FluidRegistry.LAVA};
 	public static ItemMMDBucket MetalBucket = null;
 	protected static List<ItemMMDBucket> buckets = new ArrayList<>();
+	public static List<String> nameMap = new ArrayList<>();
 	
 	private static class BucketComparator implements Comparator<ItemMMDBucket> {
 		public int compare(ItemMMDBucket left, ItemMMDBucket right) {
@@ -31,21 +33,27 @@ public class Items extends com.mcmoddev.lib.init.Items {
 	
 	public static void init() {
 		Collection<MetalMaterial> materials = Materials.getAllMaterials();
-		List<String> bucks = new ArrayList<>();
 		
 		MetalBucket = new ItemMMDBucket();
 		GameRegistry.register(MetalBucket);
 		
 		for( MetalMaterial mat : materials ) {
 			if( Config.get(mat.getName()) && mat.getType() == MaterialType.METAL ) {
-				if( !bucks.contains(mat.getName()) ) {
-					bucks.add(mat.getName());
+				if( !nameMap.contains(mat.getName()) ) {
+					nameMap.add(mat.getName());
 					buckets.add(new ItemMMDBucket(mat));
 				}
 			}
 		}
 		
 		buckets.sort( new BucketComparator() );
+		
+		nameMap.sort( new Comparator<String>() {
+			@Override
+			public int compare(String left, String right) {
+				return left.compareTo(right);
+			}
+		});
 	}
 	
 	public static int getCount() {
