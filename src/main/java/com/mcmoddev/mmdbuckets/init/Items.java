@@ -11,7 +11,6 @@ import com.mcmoddev.lib.material.MetalMaterial.MaterialType;
 import com.mcmoddev.mmdbuckets.items.ItemMMDBucket;
 import com.mcmoddev.mmdbuckets.util.Config;
 
-import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
@@ -35,7 +34,7 @@ public class Items extends com.mcmoddev.lib.init.Items {
 		
 		for( MetalMaterial mat : materials ) {
 			if( Config.get(mat.getName()) && mat.getType() == MaterialType.METAL ) {
-				buckets.add(new ItemMMDBucket(Blocks.AIR, mat));
+				buckets.add(new ItemMMDBucket(mat));
 			}
 		}
 		
