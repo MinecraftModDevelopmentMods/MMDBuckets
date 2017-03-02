@@ -13,6 +13,7 @@ import com.mcmoddev.mmdbuckets.util.Config;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class Items extends com.mcmoddev.lib.init.Items {
 	
@@ -35,6 +36,7 @@ public class Items extends com.mcmoddev.lib.init.Items {
 				buckets.add(new ItemMMDBucket(Blocks.AIR, mat));
 				if(MetalBucket == null) {
 					MetalBucket = buckets.get(0);
+					GameRegistry.register(MetalBucket);
 				}
 			}
 		}
