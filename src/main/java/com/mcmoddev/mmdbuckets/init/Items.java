@@ -30,14 +30,12 @@ public class Items extends com.mcmoddev.lib.init.Items {
 	
 	public static void init() {
 		Collection<MetalMaterial> materials = Materials.getAllMaterials();
+		MetalBucket = new ItemMMDBucket();
+		GameRegistry.register(MetalBucket);
 		
 		for( MetalMaterial mat : materials ) {
 			if( Config.get(mat.getName()) && mat.getType() == MaterialType.METAL ) {
 				buckets.add(new ItemMMDBucket(Blocks.AIR, mat));
-				if(MetalBucket == null) {
-					MetalBucket = buckets.get(0);
-					GameRegistry.register(MetalBucket);
-				}
 			}
 		}
 		
