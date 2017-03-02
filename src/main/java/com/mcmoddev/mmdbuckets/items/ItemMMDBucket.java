@@ -28,6 +28,7 @@ public class ItemMMDBucket extends ItemBucket implements IOreDictionaryEntry, IM
 		this.setHasSubtypes(true);
 		this.setCreativeTab(CreativeTabs.MISC);
 		this.setMaxDamage(0);
+		this.setRegistryName("metalbucket."+base.getName());
 	}
 
 	@Override
