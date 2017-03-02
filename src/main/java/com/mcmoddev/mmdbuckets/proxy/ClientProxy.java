@@ -18,13 +18,13 @@ public class ClientProxy extends CommonProxy {
 	public void preInit(FMLPreInitializationEvent event) {
 		super.preInit(event);
 		
-		ModelLoader.setCustomMeshDefinition(Items.MetalBucket, new ItemMeshDefinition() {
+/*		ModelLoader.setCustomMeshDefinition(Items.MetalBucket, new ItemMeshDefinition() {
 			@Override
 			public ModelResourceLocation getModelLocation(ItemStack stack) {
 				return new ModelResourceLocation(stack.getItem().getRegistryName(), "inventory");
 			}
 		});
-	}
+*/	}
 
 	public void init(FMLInitializationEvent event) {
 		super.init(event);
