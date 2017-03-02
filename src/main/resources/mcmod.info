@@ -1,0 +1,16 @@
+[
+{
+  "modid": "mmdbuckets",
+  "name": "MMD Buckets",
+  "description": "Adds buckets of all materials registered with MMDLib",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "https://github.com/dshadowwolf/MMDBuckets",
+  "updateUrl": "",
+  "authorList": ["dshadowwolf"],
+  "credits": "Jriwanek, SeqSEE, Cyanobacterium (aka DrCyano) and the rest of the people that had a hand in making the mods that gave the impetus for this one",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": ["basemetals"]
+}
+]
