@@ -35,6 +35,9 @@ public class Items extends com.mcmoddev.lib.init.Items {
 	}
 	
 	public static String getNameFromMeta( int meta ) {
+		if( meta > buckets.size() ) {
+			return buckets.get(0).getMaterial().getName();
+		}
 		return buckets.get(meta).getMaterial().getName();
 	}
 }
