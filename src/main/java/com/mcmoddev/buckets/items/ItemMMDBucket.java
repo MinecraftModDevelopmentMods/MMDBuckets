@@ -9,27 +9,27 @@ import net.minecraft.item.ItemBucket;
 
 public class ItemMMDBucket extends ItemBucket implements IOreDictionaryEntry, IMetalObject {
 
-	public ItemMMDBucket(Block containedBlockIn) {
+	private final MetalMaterial baseMaterial;
+	
+	public ItemMMDBucket(Block containedBlockIn, MetalMaterial base) {
 		super(containedBlockIn);
-		// TODO Auto-generated constructor stub
+		this.baseMaterial = base;
+		this.setMaxStackSize(1);
 	}
 
 	@Override
 	public MetalMaterial getMaterial() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.baseMaterial;
 	}
 
 	@Override
 	public MetalMaterial getMetalMaterial() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.getMaterial();
 	}
 
 	@Override
 	public String getOreDictionaryName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "bucket"+this.baseMaterial.getCapitalizedName();
 	}
 
 }
