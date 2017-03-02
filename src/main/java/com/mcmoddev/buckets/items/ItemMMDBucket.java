@@ -13,7 +13,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemStack;
-
+import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -48,7 +48,24 @@ public class ItemMMDBucket extends ItemBucket implements IOreDictionaryEntry, IM
 
 	@Override
 	public String getUnlocalizedName(ItemStack stack) {
-		return "item.bucket." + Items.getNameFromMeta(stack.getMetadata()) + ".name";
+		return "item.mmdbuckets."+ Items.getNameFromMeta(stack.getMetadata())+".bucket.name";
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public String getItemStackDisplayName(ItemStack stack) {
+		MetalMaterial mat = Items.getBucketByMeta(stack.getMetadata()).getMetalMaterial();
+		if( mat != null ) {
+			String unloc = "item.mmdbuckets.bucket.name";
+			String form = getUnlocalizedName(stack);
+			String name = mat.getCapitalizedName();
+			
+			if( I18n.canTranslate(unloc) )
+				return I18n.translateToLocalFormatted(unloc, name);
+			
+			return form;
+		}
+		return super.getItemStackDisplayName(stack);
 	}
 	
 	@SideOnly(Side.CLIENT)

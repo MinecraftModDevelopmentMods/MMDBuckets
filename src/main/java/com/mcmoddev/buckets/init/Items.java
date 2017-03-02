@@ -12,9 +12,11 @@ import com.mcmoddev.lib.material.MetalMaterial;
 import com.mcmoddev.lib.material.MetalMaterial.MaterialType;
 
 import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 
 public class Items extends com.mcmoddev.lib.init.Items {
 	
+	public static Item MetalBucket = null;
 	protected static List<ItemMMDBucket> buckets = new ArrayList<>();
 
 	private static class BucketComparator implements Comparator<ItemMMDBucket> {
@@ -31,6 +33,9 @@ public class Items extends com.mcmoddev.lib.init.Items {
 		for( MetalMaterial mat : materials ) {
 			if( Config.get(mat.getName()) && mat.getType() == MaterialType.METAL ) {
 				buckets.add(new ItemMMDBucket(Blocks.AIR, mat));
+				if(MetalBucket == null) {
+					MetalBucket = buckets.get(0);
+				}
 			}
 		}
 		
@@ -50,5 +55,12 @@ public class Items extends com.mcmoddev.lib.init.Items {
 			return buckets.get(0).getMaterial().getName();
 		}
 		return buckets.get(meta).getMaterial().getName();
+	}
+
+	public static ItemMMDBucket getBucketByMeta(int metadata) {
+		if( metadata > buckets.size() ) {
+			return buckets.get(0);
+		}
+		return buckets.get(metadata);
 	}
 }

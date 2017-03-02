@@ -17,6 +17,8 @@ import com.mcmoddev.buckets.proxy.CommonProxy;
 /**
  * Mod entry point
  *
+ * Many thanks to TehNut for his help and examples that got this to where it is
+ * 
  * @author Daniel Hazelton &lt;dshadowwolf@gmail.com&gt;
  */
 
