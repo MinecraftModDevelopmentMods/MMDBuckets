@@ -1,7 +1,7 @@
-package com.mcmoddev.buckets.proxy;
+package com.mcmoddev.mmdbuckets.proxy;
 
-import com.mcmoddev.buckets.init.Items;
-import com.mcmoddev.buckets.items.ItemMMDBucket;
+import com.mcmoddev.mmdbuckets.init.Items;
+import com.mcmoddev.mmdbuckets.items.ItemMMDBucket;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemMeshDefinition;

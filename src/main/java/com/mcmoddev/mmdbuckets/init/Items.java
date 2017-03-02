@@ -1,4 +1,4 @@
-package com.mcmoddev.buckets.init;
+package com.mcmoddev.mmdbuckets.init;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,10 +6,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import com.mcmoddev.buckets.items.ItemMMDBucket;
-import com.mcmoddev.buckets.util.Config;
 import com.mcmoddev.lib.material.MetalMaterial;
 import com.mcmoddev.lib.material.MetalMaterial.MaterialType;
+import com.mcmoddev.mmdbuckets.items.ItemMMDBucket;
+import com.mcmoddev.mmdbuckets.util.Config;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;

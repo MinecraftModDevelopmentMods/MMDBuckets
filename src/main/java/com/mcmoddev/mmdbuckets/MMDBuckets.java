@@ -1,7 +1,9 @@
-package com.mcmoddev.buckets;
+package com.mcmoddev.mmdbuckets;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.mcmoddev.mmdbuckets.proxy.CommonProxy;
 
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -11,8 +13,6 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-
-import com.mcmoddev.buckets.proxy.CommonProxy;
 
 /**
  * Mod entry point

@@ -1,12 +1,11 @@
-package com.mcmoddev.buckets.items;
+package com.mcmoddev.mmdbuckets.items;
 
 import com.mcmoddev.lib.material.IMetalObject;
 import com.mcmoddev.lib.material.MetalMaterial;
 import com.mcmoddev.lib.registry.IOreDictionaryEntry;
+import com.mcmoddev.mmdbuckets.init.Items;
 
 import java.util.List;
-
-import com.mcmoddev.buckets.init.Items;
 
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;

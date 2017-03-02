@@ -1,8 +1,8 @@
-package com.mcmoddev.buckets.util;
+package com.mcmoddev.mmdbuckets.util;
 
 import java.io.File;
 
-import com.mcmoddev.buckets.MMDBuckets;
+import com.mcmoddev.mmdbuckets.MMDBuckets;
 
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;

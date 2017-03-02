@@ -1,7 +1,7 @@
-package com.mcmoddev.buckets.proxy;
+package com.mcmoddev.mmdbuckets.proxy;
 
-import com.mcmoddev.buckets.util.Config;
-import com.mcmoddev.buckets.init.*;
+import com.mcmoddev.mmdbuckets.init.*;
+import com.mcmoddev.mmdbuckets.util.Config;
 
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;

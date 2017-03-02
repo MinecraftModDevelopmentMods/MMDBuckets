@@ -1,6 +1,6 @@
-package com.mcmoddev.buckets.proxy;
+package com.mcmoddev.mmdbuckets.proxy;
 
-import com.mcmoddev.buckets.proxy.CommonProxy;
+import com.mcmoddev.mmdbuckets.proxy.CommonProxy;
 
 public class ServerProxy extends CommonProxy {
 	// this space intentionally left blank
