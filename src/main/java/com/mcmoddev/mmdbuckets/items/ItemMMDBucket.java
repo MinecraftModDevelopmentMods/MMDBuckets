@@ -132,6 +132,8 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
 				if( ret != null ) {
 					return ret;
 				}
+			} else {
+				MMDBuckets.logger.error("getFluid(stack) was not null, but getFluid(itemIn) was");
 			}
 			
 			return ActionResult.newResult(EnumActionResult.PASS, itemIn);
@@ -197,7 +199,7 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
 			return;
 		}
 		MMDBuckets.logger.error("Filling Bucket");
-		ItemStack bucket = new ItemStack( new ItemMMDBucket(base), 1, Items.getMetaFromMaterialName(base.getName()) );
+		ItemStack bucket = empty.copy();
 		bucket.stackSize = 1;
 		MMDBuckets.logger.error("Bucket is: %s:%d", bucket.getItem(), bucket.getMetadata());
 		
