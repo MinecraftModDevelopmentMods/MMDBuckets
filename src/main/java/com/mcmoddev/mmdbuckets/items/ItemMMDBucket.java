@@ -164,7 +164,7 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
                     playerIn.addStat(StatList.getObjectUseStats(this));
 
                     itemIn.stackSize--;
-                    ItemStack emptyStack = new ItemStack(this, 1, Items.getBuckets().indexOf(base.getName()));
+                    ItemStack emptyStack = new ItemStack(itemIn.getItem(), 1, itemIn.getMetadata());
 
                     // check whether we replace the item or add the empty one to the inventory
                     if (itemIn.stackSize <= 0) {
