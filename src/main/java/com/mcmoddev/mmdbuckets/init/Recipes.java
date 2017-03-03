@@ -14,6 +14,12 @@ public class Recipes extends com.mcmoddev.lib.init.Recipes {
 			String oreDictName = name.substring(0, 1).toUpperCase()+name.substring(1);
 			
 			GameRegistry.addRecipe( new ShapedOreRecipe( new ItemStack(Items.MetalBucket, 1, Items.nameMap.indexOf(name)), "x x", " x ", 'x', Oredicts.INGOT+oreDictName) );
+			
+			if( com.mcmoddev.basemetals.util.Config.Options.furnaceCheese ) {
+				GameRegistry.addSmelting(new ItemStack(Items.MetalBucket, 1, Items.nameMap.indexOf(name)), new ItemStack( bucket.getMetalMaterial().ingot,  3), 0);
+			} else if( com.mcmoddev.basemetals.util.Config.Options.furnace1112 ) {
+				GameRegistry.addSmelting(new ItemStack(Items.MetalBucket, 1, Items.nameMap.indexOf(name)), new ItemStack( bucket.getMetalMaterial().nugget,  1), 0);
+			}
 		}
 	}
 }
