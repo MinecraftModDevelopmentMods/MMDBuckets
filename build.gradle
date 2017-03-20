@@ -72,6 +72,18 @@ repositories {
         name "MMD"
         url "https://maven.mcmoddev.com/"
     }
+    maven { // CoFH stuff is here
+    	name "Covers Maven"
+    	url "http://maven.covers1624.net"
+    }
+    maven { // CoFH stuff is here
+    	name "Covers Maven"
+    	url "http://maven.covers1624.net"
+    }
+    maven {
+        name "Chickenbones Repo"
+        url "http://chickenbones.net/maven/"
+    }
 }
 
 dependencies {
