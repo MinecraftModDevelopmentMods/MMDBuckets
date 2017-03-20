@@ -1,5 +1,6 @@
 package com.mcmoddev.mmdbuckets.proxy;
 
+import com.mcmoddev.mmdbuckets.MMDBuckets;
 import com.mcmoddev.mmdbuckets.init.Items;
 import com.mcmoddev.mmdbuckets.items.ItemMMDBucket;
 
@@ -16,8 +17,12 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		super.preInit(event);
-		ModelLoader.setCustomModelResourceLocation(Items.MetalBucket, 0, new ModelResourceLocation(Items.MetalBucket.getRegistryName(), "inventory"));	}
+		for( int i = 0; i < Items.getCount(); i++ ) {
+			ModelLoader.setCustomModelResourceLocation(Items.MetalBucket, i, new ModelResourceLocation(Items.MetalBucket.getRegistryName(), "inventory"));
+		}
+	}
 
+	@Override
 	public void init(FMLInitializationEvent event) {
 		super.init(event);
 		Minecraft.getMinecraft().getItemColors().registerItemColorHandler(new IItemColor() {
@@ -25,12 +30,13 @@ public class ClientProxy extends CommonProxy {
 			public int getColorFromItemstack(ItemStack stack, int tintIndex) {
 				ItemMMDBucket thisBucket = Items.getBucketByMeta(stack.getMetadata());
 				if( thisBucket == null )
-					return 0;
-				return thisBucket.getMetalMaterial().tintColor;
+					return -1;
+				MMDBuckets.logger.fatal("Bucket "+thisBucket+" meta "+stack.getMetadata()+" tint: "+thisBucket.getMetalMaterial().getTintColor());
+				return thisBucket.getMetalMaterial().getTintColor();
 			}
 		}, Items.MetalBucket );
 	}
-
+	
 	public void postInit(FMLPostInitializationEvent event) {
 		super.postInit(event);
 	}
