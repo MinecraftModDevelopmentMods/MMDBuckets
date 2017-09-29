@@ -2,7 +2,6 @@ package com.mcmoddev.mmdbuckets.init;
 
 import com.mcmoddev.lib.material.MMDMaterial;
 import com.mcmoddev.lib.material.MMDMaterial.MaterialType;
-import com.mcmoddev.mmdbuckets.MMDBuckets;
 import com.mcmoddev.mmdbuckets.items.ItemMMDBucket;
 
 import net.minecraftforge.fluids.FluidRegistry;
@@ -21,7 +20,6 @@ public class Items extends com.mcmoddev.lib.init.Items {
 				if( !mat.getName().equals("iron") && !mat.hasItem("bucket") ) {
 					ItemMMDBucket nb = new ItemMMDBucket(mat);
 					mat.addNewItem("bucket", addItem(nb, "bucket", mat, com.mcmoddev.basemetals.init.ItemGroups.myTabs.itemsTab));
-					MMDBuckets.logger.fatal("Added bucket for %s", mat.getName());
 				}
 			}
 		}		
@@ -30,9 +28,7 @@ public class Items extends com.mcmoddev.lib.init.Items {
 	@SubscribeEvent
 	public static void registerItems(RegistryEvent.Register<Item> ev) {
 		for( MMDMaterial mat : Materials.getAllMaterials() ) {
-			MMDBuckets.logger.fatal("has bucket: %s - is instance: %s", mat.hasItem("bucket"), mat.getItem("bucket") instanceof ItemMMDBucket);
 			if( mat.hasItem("bucket") && mat.getItem("bucket") instanceof ItemMMDBucket ) {
-				MMDBuckets.logger.fatal("registering bucket for %s", mat.getName());
 				ev.getRegistry().register(mat.getItem("bucket"));
 			}
 		}

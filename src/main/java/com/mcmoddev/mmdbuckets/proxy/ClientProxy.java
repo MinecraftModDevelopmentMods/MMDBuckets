@@ -8,20 +8,20 @@ import com.mcmoddev.mmdbuckets.items.ItemMMDBucket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.color.IItemColor;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ClientProxy extends CommonProxy {
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		super.preInit(event);
-		for( MMDMaterial mat : Materials.getAllMaterials()) {
-			if( mat.hasItem("bucket") && mat.getItem("bucket") instanceof ItemMMDBucket) {
-				ModelLoader.setCustomModelResourceLocation(mat.getItem("bucket"), 0, new ModelResourceLocation(mat.getItem("bucket").getRegistryName(), "inventory"));
-			}
-		}
+		MinecraftForge.EVENT_BUS.register(this);
 	}
 
 	@Override
@@ -29,7 +29,7 @@ public class ClientProxy extends CommonProxy {
 		super.init(event);
 		for( MMDMaterial mat : Materials.getAllMaterials() ) {
 			if( mat.hasItem("bucket") && mat.getItem("bucket") instanceof ItemMMDBucket ) {
-				ItemMMDBucket bucket = (ItemMMDBucket) mat.getItem("bucket");
+				Item bucket = mat.getItem("bucket");
 				Minecraft.getMinecraft().getItemColors().registerItemColorHandler(new IItemColor() {
 					@Override
 					public int colorMultiplier(ItemStack stack, int tintIndex) {
@@ -43,5 +43,15 @@ public class ClientProxy extends CommonProxy {
 				}, bucket );
 			}
 		}
-	}	
+	}
+	
+	@SubscribeEvent
+	public void modelRegistryBits(ModelRegistryEvent ev) {
+		for( MMDMaterial mat : Materials.getAllMaterials()) {
+			if( mat.hasItem("bucket") && mat.getItem("bucket") instanceof ItemMMDBucket) {
+				MMDBuckets.logger.fatal("Setting ResLoc for bucket of material %s", mat.getName());
+				ModelLoader.setCustomModelResourceLocation(mat.getItem("bucket"), 0, new ModelResourceLocation("bucket", "inventory"));
+			}
+		}
+	}
 }
