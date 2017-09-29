@@ -1,13 +1,12 @@
 package com.mcmoddev.mmdbuckets.items;
 
 
-import com.mcmoddev.lib.material.MetalMaterial;
+import com.mcmoddev.lib.material.MMDMaterial;
 import com.mcmoddev.mmdbuckets.init.Materials;
 import com.mcmoddev.mmdbuckets.util.DispenseMMDBucket;
 import com.mcmoddev.mmdbuckets.util.MMDBucketWrapper;
 
 import net.minecraft.block.BlockDispenser;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -18,44 +17,36 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidActionResult;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.IFluidContainerItem;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.items.ItemHandlerHelper;
 
-import java.util.List;
+import javax.annotation.Nonnull;
 
-import com.mcmoddev.lib.material.IMetalObject;
+import com.mcmoddev.lib.material.IMMDObject;
 import com.mcmoddev.lib.registry.IOreDictionaryEntry;
 import com.mcmoddev.mmdbuckets.MMDBuckets;
-import com.mcmoddev.mmdbuckets.init.Items;
 
-@SuppressWarnings("deprecation")
-public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDictionaryEntry, IMetalObject  {
+public class ItemMMDBucket extends Item implements IOreDictionaryEntry, IMMDObject  {
 
-	private static int numBuckets = Items.getCount();	
 	private static final String FLUID_TAG = "mmdbucketfluids";
 	
-	private final MetalMaterial base;
+	private final MMDMaterial base;
 	
 	public ItemMMDBucket() {
 		this(Materials.getMaterialByName("iron"));
 	}
 
-	public ItemMMDBucket(MetalMaterial mat) {
+	public ItemMMDBucket(MMDMaterial mat) {
 		this.base = mat;
-		this.setHasSubtypes(true);
-		this.setCreativeTab(CreativeTabs.MISC);
-		this.setRegistryName(MMDBuckets.MODID+":bucket");
 		BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(this, DispenseMMDBucket.getInstance());
 	}
 
@@ -69,13 +60,8 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
 	}
 	
 	@Override
-	public MetalMaterial getMaterial() {
+	public MMDMaterial getMMDMaterial() {
 		return this.base;
-	}
-
-	@Override
-	public MetalMaterial getMetalMaterial() {
-		return this.getMaterial();
 	}
 
 	@Override
@@ -83,51 +69,18 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
 		return "bucket"+this.base.getCapitalizedName();
 	}
 
-	@Override
-	public String getUnlocalizedName(ItemStack stack) {
-		FluidStack fluid = getFluid(stack);
-		return "item.mmdbuckets."+ Items.getNameFromMeta(stack.getMetadata())+"."+(fluid==null?"empty":fluid.getFluid().getName())+".bucket.name";
-	}
-
-	@Override
-	public String getItemStackDisplayName(ItemStack stack) {
-		MetalMaterial mat = Items.getBucketByMeta(stack.getMetadata()).getMetalMaterial();
-		if( mat != null ) {
-			String unloc = "item.mmdbuckets.bucket.name";
-			String form = getUnlocalizedName(stack);
-			String name = mat.getCapitalizedName();
-			FluidStack fluid = getFluid(stack);
-			
-			if( I18n.canTranslate(unloc) )
-				return I18n.translateToLocalFormatted(unloc, name, fluid == null?"empty":fluid.getFluid().getName());
-			
-			return form;
-		}
-		return super.getItemStackDisplayName(stack);
-	}
-	
-	@Override
-	public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
-		if( numBuckets == 0 ) {
-			numBuckets = Items.getCount();
-		}
-		
-		for( int i = 0; i < numBuckets; i++ ) {
-			subItems.add( new ItemStack(itemIn, 1, i) );
-		}
-	}
-	
 	/*
 	 * Now for the fun stuff
 	 */
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(ItemStack itemIn, World worldIn, EntityPlayer playerIn, EnumHand handIn ) {
+	public ActionResult<ItemStack> onItemRightClick(@Nonnull World world, @Nonnull EntityPlayer player, @Nonnull EnumHand hand) {
+		ItemStack itemIn = player.getHeldItem(hand);
 		FluidStack fluidStack = getFluid(itemIn);
+		
 		if( fluidStack == null) {
 			// we fill the bucket instead of empty it
-			ItemStack stack = playerIn.getHeldItem(handIn);
-			if( getFluid(stack) == null ) {
-				ActionResult<ItemStack> ret = ForgeEventFactory.onBucketUse(playerIn, worldIn, itemIn, this.rayTrace(worldIn, playerIn, true));
+			if( getFluid(itemIn) == null ) {
+				ActionResult<ItemStack> ret = ForgeEventFactory.onBucketUse(player, world, itemIn, this.rayTrace(world, player, true));
 				if( ret != null ) {
 					return ret;
 				}
@@ -140,7 +93,7 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
 		
 		
         // clicked on a block?
-        RayTraceResult mop = this.rayTrace(worldIn, playerIn, false);
+        RayTraceResult mop = this.rayTrace(world, player, false);
 
         if(mop == null || mop.typeOfHit != RayTraceResult.Type.BLOCK) {
             return ActionResult.newResult(EnumActionResult.PASS, itemIn);
@@ -148,29 +101,27 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
 
         BlockPos clickPos = mop.getBlockPos();
         // can we place liquid there?
-        if (worldIn.isBlockModifiable(playerIn, clickPos)) {
+        if (world.isBlockModifiable(player, clickPos)) {
             // the block adjacent to the side we clicked on
             BlockPos targetPos = clickPos.offset(mop.sideHit);
 
             // can the player place there?
-            if (playerIn.canPlayerEdit(targetPos, mop.sideHit, itemIn)) {
+            if (player.canPlayerEdit(targetPos, mop.sideHit, itemIn)) {
                 // try placing liquid
-                if (FluidUtil.tryPlaceFluid(playerIn, playerIn.getEntityWorld(), fluidStack, targetPos) && !playerIn.capabilities.isCreativeMode) {
-					if(fluidStack.getFluid() == FluidRegistry.WATER || fluidStack.getFluid() == FluidRegistry.LAVA) {
-						worldIn.notifyBlockOfStateChange(targetPos, worldIn.getBlockState(targetPos).getBlock());
-					}
+            	FluidActionResult res = FluidUtil.tryPlaceFluid(player, world, targetPos, itemIn, fluidStack); 
+                if( (res.isSuccess()) && (!player.capabilities.isCreativeMode) ) {
                     // success!
-                    playerIn.addStat(StatList.getObjectUseStats(this));
+                    player.addStat(StatList.getObjectUseStats(this));
 
-                    itemIn.stackSize--;
+                    itemIn.shrink(1);
                     ItemStack emptyStack = new ItemStack(itemIn.getItem(), 1, itemIn.getMetadata());
 
                     // check whether we replace the item or add the empty one to the inventory
-                    if (itemIn.stackSize <= 0) {
+                    if (itemIn.isEmpty()) {
                         return ActionResult.newResult(EnumActionResult.SUCCESS, emptyStack);
                     } else {
                         // add empty bucket to player inventory
-                        ItemHandlerHelper.giveItemToPlayer(playerIn, emptyStack);
+                        ItemHandlerHelper.giveItemToPlayer(player, emptyStack);
                         return ActionResult.newResult(EnumActionResult.SUCCESS, itemIn);
                     }
                 }
@@ -197,12 +148,12 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
 		}
 		
 		ItemStack empty = ev.getEmptyBucket();
-		if( empty == null || !empty.getItem().equals(this) ) {
+		if( empty.isEmpty() || !empty.getItem().equals(this) ) {
 			return;
 		}
 		
 		ItemStack bucket = empty.copy();
-		bucket.stackSize = 1;
+		bucket.setCount(1);
 		
 		RayTraceResult target = ev.getTarget();		
 		if( target == null || target.typeOfHit != RayTraceResult.Type.BLOCK ) {
@@ -211,76 +162,24 @@ public class ItemMMDBucket extends Item implements IFluidContainerItem, IOreDict
 		
 		World world = ev.getWorld();
 		BlockPos targetPos = target.getBlockPos();
+
+		FluidActionResult res = FluidUtil.tryPickUpFluid(bucket, ev.getEntityPlayer(), world, targetPos, target.sideHit); 
 		
-		ItemStack filled = FluidUtil.tryPickUpFluid(bucket, ev.getEntityPlayer(), world, targetPos, target.sideHit);
-		
-		if( filled != null ) {
+		if( res.isSuccess() ) {
 			ev.setResult(Event.Result.ALLOW);
-			ev.setFilledBucket(filled);
+			ev.setFilledBucket(res.getResult());
 		} else {
 			ev.setCanceled(true);
 		}
 	}
 
-	@Override
-	public int getCapacity(ItemStack container) {
-		return getCapacity();
-	}
-
 	public int getCapacity() {
 		return Fluid.BUCKET_VOLUME;
 	}
-	
-	@Override
-	public int fill(ItemStack container, FluidStack resource, boolean doFill) {
-		if( container.stackSize != 1 || resource == null || resource.amount < 1000 ) {
-			return 0;
-		}
 		
-		if( getFluid(container) != null ) {
-			return 0;
-		}
-		
-		if( FluidRegistry.getBucketFluids().contains(resource.getFluid()) ||
-				resource.getFluid() == FluidRegistry.WATER ||
-				resource.getFluid() == FluidRegistry.LAVA ) {
-			if( doFill ) {
-				NBTTagCompound t = container.getTagCompound();
-				if( t == null ) {
-					t = new NBTTagCompound();
-				}
-				
-				t.setTag(FLUID_TAG, resource.writeToNBT( new NBTTagCompound() ));
-				container.setTagCompound(t);
-			}
-			return getCapacity();
-		}
-		return 0;
-	}
-
-	@Override
-	public FluidStack drain(ItemStack container, int maxDrain, boolean doDrain) {
-		if( container.stackSize != 1 || maxDrain < getCapacity(container) ) {
-			return null;
-		}
-		
-		FluidStack fluidStack = getFluid(container);
-		if( doDrain && fluidStack != null ) {
-			NBTTagCompound tag = container.getTagCompound();
-			if( tag != null ) {
-				tag.removeTag(FLUID_TAG);
-			}
-			
-			if( tag.hasNoTags() ) {
-				container.setTagCompound(null);
-			}
-		}
-		return fluidStack;
-	}
-	
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, NBTTagCompound nbt)
     {
-        return new MMDBucketWrapper(stack);
+        return new MMDBucketWrapper(stack, this);
     }
 }

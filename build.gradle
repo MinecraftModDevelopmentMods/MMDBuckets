@@ -4,17 +4,21 @@ buildscript {
     repositories {
         jcenter()
         maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
+            name = 'forge'
+            url = 'http://files.minecraftforge.net/maven'
         }
         maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/groups/public"
+            name = 'gradle'
+            url 'https://plugins.gradle.org/m2/'
+        }
+        maven {
+            name = 'sonatype'
+            url = 'https://oss.sonatype.org/content/groups/public'
         }
     }
     dependencies {
-        classpath "net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT"
-        classpath "com.matthewprenger:CurseGradle:1.0-SNAPSHOT"
+        classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
+        classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.0.9"
     }
 }
 
@@ -27,7 +31,7 @@ javadoc {
 }
 
 def mod_file = getModFile()
-def mc_version = "1.10.2"
+def mc_version = "1.12"
 def short_version = getVersion("VERSION", mod_file)
 version = mc_version + "-" + short_version
 if (System.getenv().BUILD_NUMBER) {
@@ -62,9 +66,9 @@ if (secretFile.exists()) {
 }
 
 minecraft {
-    version = "1.10.2-12.18.3.2185"
+    version = "1.12.1-14.22.1.2485"
     runDir = "run"
-    mappings = "stable_29"
+    mappings = "snapshot_20170925"
 }
 
 repositories {

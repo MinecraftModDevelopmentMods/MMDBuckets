@@ -3,10 +3,8 @@ package com.mcmoddev.mmdbuckets;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.mcmoddev.mmdbuckets.init.Items;
 import com.mcmoddev.mmdbuckets.proxy.CommonProxy;
 
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -27,8 +25,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 @Mod( modid = MMDBuckets.MODID,
 name = MMDBuckets.NAME,
 version = MMDBuckets.VERSION,
-dependencies = "required-after:Forge@[12.18.3.2185,);required-after:basemetals;required-after:modernmetals;",
-acceptedMinecraftVersions = "[1.10.2,)" )
+dependencies = "required-after:forge@[14.21.0.2327,);required-after:basemetals;required-after:modernmetals;",
+acceptedMinecraftVersions = "[1.12,)" )
 
 public class MMDBuckets {
 	@Instance
@@ -39,7 +37,7 @@ public class MMDBuckets {
 	/** Display name of this Mod */
 	public static final String NAME = "MMD Buckets";
 	/** Version Number, in SemVer format */
-	public static final String VERSION = "0.0.1-alpha1";
+	public static final String VERSION = "0.0.1-alpha2";
 
 	/** base format for naming the proxies */
 	public static final String PROXY_BASE = "com.mcmoddev."+MODID+".proxy.";
@@ -63,7 +61,7 @@ public class MMDBuckets {
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		proxy.postInit(event);
-		MinecraftForge.EVENT_BUS.register(Items.MetalBucket);
+//		MinecraftForge.EVENT_BUS.register(Items.MetalBucket);
 	}
 
 	public static boolean hasMMDLib() {
