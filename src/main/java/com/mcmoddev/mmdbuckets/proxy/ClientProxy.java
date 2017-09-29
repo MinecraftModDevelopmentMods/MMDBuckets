@@ -36,7 +36,6 @@ public class ClientProxy extends CommonProxy {
 						ItemMMDBucket thisBucket = (ItemMMDBucket)stack.getItem();
 						if( thisBucket == null )
 							return -1;
-						MMDBuckets.logger.fatal("Bucket "+thisBucket+" meta "+stack.getMetadata()+" tint: "+thisBucket.getMMDMaterial().getTintColor());
 						return thisBucket.getMMDMaterial().getTintColor();
 					}
 
@@ -49,7 +48,6 @@ public class ClientProxy extends CommonProxy {
 	public void modelRegistryBits(ModelRegistryEvent ev) {
 		for( MMDMaterial mat : Materials.getAllMaterials()) {
 			if( mat.hasItem("bucket") && mat.getItem("bucket") instanceof ItemMMDBucket) {
-				MMDBuckets.logger.fatal("Setting ResLoc for bucket of material %s", mat.getName());
 				ModelLoader.setCustomModelResourceLocation(mat.getItem("bucket"), 0, new ModelResourceLocation("bucket", "inventory"));
 			}
 		}

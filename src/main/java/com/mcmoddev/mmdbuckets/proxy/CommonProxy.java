@@ -1,8 +1,12 @@
 package com.mcmoddev.mmdbuckets.proxy;
 
+import com.mcmoddev.lib.material.MMDMaterial;
+import com.mcmoddev.mmdbuckets.MMDBuckets;
 import com.mcmoddev.mmdbuckets.init.*;
+import com.mcmoddev.mmdbuckets.items.ItemMMDBucket;
 import com.mcmoddev.mmdbuckets.util.Config;
 
+import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -22,6 +26,12 @@ public class CommonProxy {
 	}
 
 	public void postInit(FMLPostInitializationEvent event) {
-		Config.postInit();		
+		Config.postInit();
+		for( MMDMaterial mat : Materials.getAllMaterials()) {
+			Item bucket = mat.getItem("bucket");
+			if( bucket != null && bucket instanceof ItemMMDBucket ) {
+				MinecraftForge.EVENT_BUS.register(bucket);
+			}
+		}
 	}
 }
