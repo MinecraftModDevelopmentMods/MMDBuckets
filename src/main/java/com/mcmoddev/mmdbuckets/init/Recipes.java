@@ -1,24 +1,43 @@
 package com.mcmoddev.mmdbuckets.init;
 
+import com.mcmoddev.lib.data.Names;
+import com.mcmoddev.lib.material.MMDMaterial;
+import com.mcmoddev.lib.util.ConfigBase.Options;
 import com.mcmoddev.lib.util.Oredicts;
 import com.mcmoddev.mmdbuckets.items.ItemMMDBucket;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class Recipes extends com.mcmoddev.lib.init.Recipes {
 	public static void init() {
-		for( ItemMMDBucket bucket : Items.getBuckets() ) {
-			String name = bucket.getMetalMaterial().getName();
-			String oreDictName = name.substring(0, 1).toUpperCase()+name.substring(1);
+		for( MMDMaterial mat : Materials.getAllMaterials() ) {
+			if( mat.hasItem("bucket") && mat.getItem("bucket") instanceof ItemMMDBucket) {
+				ItemStack bucket = new ItemStack(mat.getItem("bucket"));
+				if( Options.isThingEnabled("furnaceCheese") ) {
+					GameRegistry.addSmelting( bucket, new ItemStack( mat.getItem(Names.INGOT),  3), 0);
+				} else if( Options.isThingEnabled("funace1112") ) {
+					GameRegistry.addSmelting( bucket, new ItemStack( mat.getItem(Names.NUGGET) ), 0);
+				}
+			}
+		}
+	}
+	
+	@SubscribeEvent
+	public static void registerRecipes(RegistryEvent.Register<IRecipe> ev) {
+		for( MMDMaterial mat : Materials.getAllMaterials() ) {
+			String oreDictName = mat.getCapitalizedName();
+			ItemStack bucket = new ItemStack(mat.getItem("bucket"));
 			
-			GameRegistry.addRecipe( new ShapedOreRecipe( new ItemStack(Items.MetalBucket, 1, Items.nameMap.indexOf(name)), "x x", " x ", 'x', Oredicts.INGOT+oreDictName) );
-			
-			if( com.mcmoddev.basemetals.util.Config.Options.furnaceCheese ) {
-				GameRegistry.addSmelting(new ItemStack(Items.MetalBucket, 1, Items.nameMap.indexOf(name)), new ItemStack( bucket.getMetalMaterial().ingot,  3), 0);
-			} else if( com.mcmoddev.basemetals.util.Config.Options.furnace1112 ) {
-				GameRegistry.addSmelting(new ItemStack(Items.MetalBucket, 1, Items.nameMap.indexOf(name)), new ItemStack( bucket.getMetalMaterial().nugget,  1), 0);
+			if( !bucket.isEmpty() && bucket.getItem() instanceof ItemMMDBucket) {
+				ShapedOreRecipe thisRecipe = new ShapedOreRecipe( new ResourceLocation("buckets"), bucket, "x x", " x ", 'x', Oredicts.INGOT+oreDictName);
+				thisRecipe.setRegistryName(oreDictName+"_bucket");
+				ev.getRegistry().register(thisRecipe);
 			}
 		}
 	}
