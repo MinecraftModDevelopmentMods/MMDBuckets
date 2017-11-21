@@ -161,7 +161,7 @@ publishing {
 curseforge {
     apiKey = secret.curseforgeAPIKey
     project {
-        id = "245445"
+        id = "282366"
         changelog = file("CHANGELOG.txt")
         releaseType = "release"
         addGameVersion(project.mc_version)
@@ -173,10 +173,11 @@ curseforge {
         mainArtifact(jar) {
             displayName = "$projName $displayVersion"
             relations {
-                requiredLibrary "mmd-orespawn"
-                optionalLibrary "base-metals"
+                requiredLibrary "base-metals"
                 optionalLibrary "base-minerals"
                 optionalLibrary "modern-metals"
+		optionalLibrary "nether-metals"
+		optionalLibrary "end-metals"
             }
         }
         addArtifact(sourceJar) {
