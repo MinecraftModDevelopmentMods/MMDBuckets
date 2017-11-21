@@ -1,18 +1,22 @@
 package com.mcmoddev.mmdbuckets.util;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.vecmath.Quat4f;
-
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
+import com.mcmoddev.mmdbuckets.MMDBuckets;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.BakedQuadRetextured;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
@@ -33,7 +37,6 @@ import net.minecraftforge.client.model.ICustomModelLoader;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ItemLayerModel;
 import net.minecraftforge.client.model.ItemTextureQuadConverter;
-import net.minecraftforge.client.model.ModelDynBucket;
 import net.minecraftforge.client.model.ModelStateComposition;
 import net.minecraftforge.client.model.PerspectiveMapWrapper;
 import net.minecraftforge.client.model.SimpleModelState;
@@ -45,21 +48,9 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
-import com.mcmoddev.mmdbuckets.MMDBuckets;
-
-public final class ModelMMDBucket implements IModel
-{
-    public static final ModelResourceLocation LOCATION = new ModelResourceLocation(new ResourceLocation(MMDBuckets.MODID,"full_bucket"), "inventory");
-    public static final ModelResourceLocation EMPTY_LOCATION = new ModelResourceLocation(new ResourceLocation(MMDBuckets.MODID,"bucket"), "inventory");
+public final class ModelMMDBucket implements IModel {
+    public static final ModelResourceLocation LOCATION = new ModelResourceLocation(new ResourceLocation(MMDBuckets.MODID, "full_bucket"), "inventory");
+    public static final ModelResourceLocation EMPTY_LOCATION = new ModelResourceLocation(new ResourceLocation(MMDBuckets.MODID, "bucket"), "inventory");
 
     // minimal Z offset to prevent depth-fighting
     private static final float NORTH_Z_COVER = 7.496f / 16f;
@@ -79,16 +70,14 @@ public final class ModelMMDBucket implements IModel
     private final Fluid fluid;
     private final boolean flipGas;
 
-    public ModelMMDBucket()
-    {
+    public ModelMMDBucket() {
         this(new ResourceLocation(MMDBuckets.MODID, "items/bucket_base"),
                 new ResourceLocation(MMDBuckets.MODID, "items/bucket_fluid"),
                 new ResourceLocation(MMDBuckets.MODID, "items/bucket_cover"),
                 null, false);
     }
 
-    public ModelMMDBucket(@Nullable ResourceLocation baseLocation, @Nullable ResourceLocation liquidLocation, @Nullable ResourceLocation coverLocation, @Nullable Fluid fluid, boolean flipGas)
-    {
+    public ModelMMDBucket(@Nullable ResourceLocation baseLocation, @Nullable ResourceLocation liquidLocation, @Nullable ResourceLocation coverLocation, @Nullable Fluid fluid, boolean flipGas) {
         this.baseLocation = baseLocation;
         this.liquidLocation = liquidLocation;
         this.coverLocation = coverLocation;
@@ -97,8 +86,7 @@ public final class ModelMMDBucket implements IModel
     }
 
     @Override
-    public Collection<ResourceLocation> getTextures()
-    {
+    public Collection<ResourceLocation> getTextures() {
         ImmutableSet.Builder<ResourceLocation> builder = ImmutableSet.builder();
         if (baseLocation != null)
             builder.add(baseLocation);
@@ -111,11 +99,9 @@ public final class ModelMMDBucket implements IModel
     }
 
     @Override
-    public IBakedModel bake(IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter)
-    {
+    public IBakedModel bake(IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
         // if the fluid is a gas wi manipulate the initial state to be rotated 180? to turn it upside down
-        if (flipGas && fluid != null && fluid.isGaseous())
-        {
+        if (flipGas && fluid != null && fluid.isGaseous()) {
             state = new ModelStateComposition(state, TRSRTransformation.blockCenterToCorner(new TRSRTransformation(null, new Quat4f(0, 0, 1, 0), null, null)));
         }
 
@@ -124,12 +110,11 @@ public final class ModelMMDBucket implements IModel
         TextureAtlasSprite particleSprite = null;
         ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
 
-        if(fluid != null) {
+        if (fluid != null) {
             fluidSprite = bakedTextureGetter.apply(fluid.getStill());
         }
 
-        if (baseLocation != null)
-        {
+        if (baseLocation != null) {
             // build base (insidest)
             IBakedModel model = (new ItemLayerModel(ImmutableList.of(baseLocation))).bake(state, format, bakedTextureGetter);
             builder.addAll(model.getQuads(null, null, 0).stream()
@@ -138,22 +123,19 @@ public final class ModelMMDBucket implements IModel
                     .iterator());
             particleSprite = model.getParticleTexture();
         }
-        if (liquidLocation != null && fluidSprite != null)
-        {
+        if (liquidLocation != null && fluidSprite != null) {
             TextureAtlasSprite liquid = bakedTextureGetter.apply(liquidLocation);
             // build liquid layer (inside)
             builder.addAll(ItemTextureQuadConverter.convertTexture(format, transform, liquid, fluidSprite, NORTH_Z_FLUID, EnumFacing.NORTH, fluid.getColor()));
             builder.addAll(ItemTextureQuadConverter.convertTexture(format, transform, liquid, fluidSprite, SOUTH_Z_FLUID, EnumFacing.SOUTH, fluid.getColor()));
             particleSprite = fluidSprite;
         }
-        if (coverLocation != null)
-        {
+        if (coverLocation != null) {
             // cover (the actual item around the other two)
             TextureAtlasSprite cover = bakedTextureGetter.apply(coverLocation);
             builder.add(ItemTextureQuadConverter.genQuad(format, transform, 0, 0, 16, 16, NORTH_Z_COVER, cover, EnumFacing.NORTH, 0xffffffff));
             builder.add(ItemTextureQuadConverter.genQuad(format, transform, 0, 0, 16, 16, SOUTH_Z_COVER, cover, EnumFacing.SOUTH, 0xffffffff));
-            if (particleSprite == null)
-            {
+            if (particleSprite == null) {
                 particleSprite = cover;
             }
         }
@@ -163,7 +145,6 @@ public final class ModelMMDBucket implements IModel
                         : x)
                 .iterator();
 
-//        ImmutableMap<TransformType, TRSRTransformation> transformMap = PerspectiveMapWrapper.getTransforms(ItemCameraTransforms.DEFAULT /*state*/);
         Map<TransformType, TRSRTransformation> tMap = Maps.newHashMap();
         tMap.putAll(PerspectiveMapWrapper.getTransforms(ItemCameraTransforms.DEFAULT));
         tMap.putAll(PerspectiveMapWrapper.getTransforms(state));
@@ -178,16 +159,14 @@ public final class ModelMMDBucket implements IModel
      * If the fluid can't be found, water is used
      */
     @Override
-    public ModelMMDBucket process(ImmutableMap<String, String> customData)
-    {
+    public ModelMMDBucket process(ImmutableMap<String, String> customData) {
         String fluidName = customData.get("fluid");
         Fluid fluid = FluidRegistry.getFluid(fluidName);
 
         if (fluid == null) fluid = this.fluid;
 
         boolean flip = flipGas;
-        if (customData.containsKey("flipGas"))
-        {
+        if (customData.containsKey("flipGas")) {
             String flipStr = customData.get("flipGas");
             if (flipStr.equals("true")) flip = true;
             else if (flipStr.equals("false")) flip = false;
@@ -212,8 +191,7 @@ public final class ModelMMDBucket implements IModel
      * If no liquid is given a hardcoded variant for the bucket is used.
      */
     @Override
-    public ModelMMDBucket retexture(ImmutableMap<String, String> textures)
-    {
+    public ModelMMDBucket retexture(ImmutableMap<String, String> textures) {
         ResourceLocation base = baseLocation;
         ResourceLocation liquid = liquidLocation;
         ResourceLocation cover = coverLocation;
@@ -228,30 +206,25 @@ public final class ModelMMDBucket implements IModel
         return new ModelMMDBucket(base, liquid, cover, fluid, flipGas);
     }
 
-    public enum LoaderMMDBucket implements ICustomModelLoader
-    {
+    public enum LoaderMMDBucket implements ICustomModelLoader {
         INSTANCE;
 
         @Override
-        public boolean accepts(ResourceLocation modelLocation)
-        {
+        public boolean accepts(ResourceLocation modelLocation) {
             return modelLocation.getResourceDomain().equals(MMDBuckets.MODID) && modelLocation.getResourcePath().contains("full_bucket");
         }
 
         @Override
-        public IModel loadModel(ResourceLocation modelLocation)
-        {
+        public IModel loadModel(ResourceLocation modelLocation) {
             return MODEL;
         }
 
         @Override
-        public void onResourceManagerReload(IResourceManager resourceManager)
-        {
+        public void onResourceManagerReload(IResourceManager resourceManager) {
             // no need to clear cache since we create a new model instance
         }
 
-        public void register(TextureMap map)
-        {
+        public void register(TextureMap map) {
             ResourceLocation bucketCover = new ResourceLocation(MMDBuckets.MODID, "items/bucket_cover");
             BucketCoverSprite bucketCoverSprite = new BucketCoverSprite(bucketCover);
             map.setTextureEntry(bucketCoverSprite);
@@ -262,31 +235,26 @@ public final class ModelMMDBucket implements IModel
         }
     }
 
-    private static final class BucketBaseSprite extends TextureAtlasSprite
-    {
+    private static final class BucketBaseSprite extends TextureAtlasSprite {
         private final ResourceLocation bucket = new ResourceLocation(MMDBuckets.MODID, "items/bucket");
         private final ImmutableList<ResourceLocation> dependencies = ImmutableList.of(bucket);
 
-        private BucketBaseSprite(ResourceLocation resourceLocation)
-        {
+        private BucketBaseSprite(ResourceLocation resourceLocation) {
             super(resourceLocation.toString());
         }
 
         @Override
-        public boolean hasCustomLoader(@Nonnull IResourceManager manager, @Nonnull ResourceLocation location)
-        {
+        public boolean hasCustomLoader(@Nonnull IResourceManager manager, @Nonnull ResourceLocation location) {
             return true;
         }
 
         @Override
-        public Collection<ResourceLocation> getDependencies()
-        {
+        public Collection<ResourceLocation> getDependencies() {
             return dependencies;
         }
 
         @Override
-        public boolean load(@Nonnull IResourceManager manager, @Nonnull ResourceLocation location, @Nonnull Function<ResourceLocation, TextureAtlasSprite> textureGetter)
-        {
+        public boolean load(@Nonnull IResourceManager manager, @Nonnull ResourceLocation location, @Nonnull Function<ResourceLocation, TextureAtlasSprite> textureGetter) {
             final TextureAtlasSprite sprite = textureGetter.apply(bucket);
             width = sprite.getIconWidth();
             height = sprite.getIconHeight();
@@ -300,32 +268,27 @@ public final class ModelMMDBucket implements IModel
     /**
      * Creates a bucket cover sprite from the vanilla resource.
      */
-    private static final class BucketCoverSprite extends TextureAtlasSprite
-    {
+    private static final class BucketCoverSprite extends TextureAtlasSprite {
         private final ResourceLocation bucket = new ResourceLocation(MMDBuckets.MODID, "items/bucket_fluid");
         private final ResourceLocation bucketCoverMask = new ResourceLocation(MMDBuckets.MODID, "items/bucket_fluid_mask");
         private final ImmutableList<ResourceLocation> dependencies = ImmutableList.of(bucket, bucketCoverMask);
 
-        private BucketCoverSprite(ResourceLocation resourceLocation)
-        {
+        private BucketCoverSprite(ResourceLocation resourceLocation) {
             super(resourceLocation.toString());
         }
 
         @Override
-        public boolean hasCustomLoader(@Nonnull IResourceManager manager, @Nonnull ResourceLocation location)
-        {
+        public boolean hasCustomLoader(@Nonnull IResourceManager manager, @Nonnull ResourceLocation location) {
             return true;
         }
 
         @Override
-        public Collection<ResourceLocation> getDependencies()
-        {
+        public Collection<ResourceLocation> getDependencies() {
             return dependencies;
         }
 
         @Override
-        public boolean load(@Nonnull IResourceManager manager, @Nonnull ResourceLocation location, @Nonnull Function<ResourceLocation, TextureAtlasSprite> textureGetter)
-        {
+        public boolean load(@Nonnull IResourceManager manager, @Nonnull ResourceLocation location, @Nonnull Function<ResourceLocation, TextureAtlasSprite> textureGetter) {
             final TextureAtlasSprite sprite = textureGetter.apply(bucket);
             final TextureAtlasSprite alphaMask = textureGetter.apply(bucketCoverMask);
             width = sprite.getIconWidth();
@@ -338,13 +301,11 @@ public final class ModelMMDBucket implements IModel
 
             // use the alpha mask if it fits, otherwise leave the cover texture blank
             if (empty != null && mask != null && Objects.equals(empty.getResourcePackName(), mask.getResourcePackName()) &&
-                    alphaMask.getIconWidth() == width && alphaMask.getIconHeight() == height)
-            {
+                    alphaMask.getIconWidth() == width && alphaMask.getIconHeight() == height) {
                 final int[][] oldPixels = sprite.getFrameTextureData(0);
                 final int[][] alphaPixels = alphaMask.getFrameTextureData(0);
 
-                for (int p = 0; p < width * height; p++)
-                {
+                for (int p = 0; p < width * height; p++) {
                     final int alphaMultiplier = alphaPixels[0][p] >>> 24;
                     final int oldPixel = oldPixels[0][p];
                     final int oldPixelAlpha = oldPixel >>> 24;
@@ -359,46 +320,38 @@ public final class ModelMMDBucket implements IModel
         }
 
         @Nullable
-        private static IResource getResource(ResourceLocation resourceLocation)
-        {
-            try
-            {
+        private static IResource getResource(ResourceLocation resourceLocation) {
+            try {
                 return Minecraft.getMinecraft().getResourceManager().getResource(resourceLocation);
-            }
-            catch (IOException ignored)
-            {
+            } catch (IOException ignored) {
                 return null;
             }
         }
     }
 
-    private static final class BakedMMDBucketOverrideHandler extends ItemOverrideList
-    {
+    private static final class BakedMMDBucketOverrideHandler extends ItemOverrideList {
         public static final BakedMMDBucketOverrideHandler INSTANCE = new BakedMMDBucketOverrideHandler();
-        private BakedMMDBucketOverrideHandler()
-        {
+
+        private BakedMMDBucketOverrideHandler() {
             super(ImmutableList.of());
         }
 
         @Override
-        public IBakedModel handleItemState(IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity)
-        {
+        public IBakedModel handleItemState(IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity) {
             FluidStack fluidStack = FluidUtil.getFluidContained(stack);
 
             // not a fluid item apparently
-            if (fluidStack == null)
-            {
+            if (fluidStack == null) {
                 // empty bucket
                 return originalModel;
             }
 
-            BakedMMDBucket model = (BakedMMDBucket)originalModel;
+            BakedMMDBucket model = (BakedMMDBucket) originalModel;
 
             Fluid fluid = fluidStack.getFluid();
             String name = fluid.getName();
 
-            if (!model.cache.containsKey(name))
-            {
+            if (!model.cache.containsKey(name)) {
                 IModel parent = model.parent.process(ImmutableMap.of("fluid", name));
                 Function<ResourceLocation, TextureAtlasSprite> textureGetter;
                 textureGetter = location -> Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString());
@@ -413,8 +366,7 @@ public final class ModelMMDBucket implements IModel
     }
 
     // the dynamic bucket is based on the empty bucket
-    private static final class BakedMMDBucket extends BakedItemModel
-    {
+    private static final class BakedMMDBucket extends BakedItemModel {
         private final ModelMMDBucket parent;
         private final Map<String, IBakedModel> cache; // contains all the baked models since they'll never change
         private final VertexFormat format;
@@ -424,8 +376,7 @@ public final class ModelMMDBucket implements IModel
                               TextureAtlasSprite particle,
                               VertexFormat format,
                               ImmutableMap<TransformType, TRSRTransformation> transforms,
-                              Map<String, IBakedModel> cache)
-        {
+                              Map<String, IBakedModel> cache) {
             super(quads, particle, transforms, BakedMMDBucketOverrideHandler.INSTANCE);
             this.format = format;
             this.parent = parent;
