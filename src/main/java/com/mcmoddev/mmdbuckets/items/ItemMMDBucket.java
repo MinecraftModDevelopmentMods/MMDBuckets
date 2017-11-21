@@ -132,22 +132,15 @@ public class ItemMMDBucket extends UniversalBucket implements IOreDictionaryEntr
         if (fluidStack == null) {
             // special handling of empty stack
             return new TextComponentTranslation("item.mmdbuckets.bucket_empty.name",
-                    capitalizeFirstLetter(this.getMMDMaterial().getName())
+                    this.getMMDMaterial().getCapitalizedName()
             ).getFormattedText();
         }
         else {
             return new TextComponentTranslation("item.mmdbuckets.bucket.name",
-                    capitalizeFirstLetter(this.getMMDMaterial().getName()),
+                    this.getMMDMaterial().getCapitalizedName(),
                     fluidStack.getLocalizedName()
             ).getFormattedText();
         }
-    }
-
-    private String capitalizeFirstLetter(String original) {
-        if (original == null || original.length() == 0) {
-            return original;
-        }
-        return original.substring(0, 1).toUpperCase() + original.substring(1);
     }
 
     @Override
