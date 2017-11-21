@@ -1,6 +1,5 @@
 package com.mcmoddev.mmdbuckets.items;
 
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.mcmoddev.lib.material.IMMDObject;
@@ -19,6 +18,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -128,12 +128,26 @@ public class ItemMMDBucket extends UniversalBucket implements IOreDictionaryEntr
     @Override
     @Nonnull
     public String getItemStackDisplayName(@Nonnull ItemStack stack) {
-        FluidStack fluidStack = getFluid(stack);
+        FluidStack fluidStack = this.getFluid(stack);
         if (fluidStack == null) {
             // special handling of empty stack
-            return I18n.translateToLocalFormatted("bucket.name");
+            return new TextComponentTranslation("item.mmdbuckets.bucket_empty.name",
+                    capitalizeFirstLetter(this.getMMDMaterial().getName())
+            ).getFormattedText();
         }
-        return super.getItemStackDisplayName(stack);
+        else {
+            return new TextComponentTranslation("item.mmdbuckets.bucket.name",
+                    capitalizeFirstLetter(this.getMMDMaterial().getName()),
+                    fluidStack.getLocalizedName()
+            ).getFormattedText();
+        }
+    }
+
+    private String capitalizeFirstLetter(String original) {
+        if (original == null || original.length() == 0) {
+            return original;
+        }
+        return original.substring(0, 1).toUpperCase() + original.substring(1);
     }
 
     @Override
