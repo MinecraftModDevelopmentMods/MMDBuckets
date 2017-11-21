@@ -14,9 +14,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.stats.StatList;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.translation.I18n;
@@ -25,12 +28,15 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidActionResult;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.UniversalBucket;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 @Mod.EventBusSubscriber
 public class ItemMMDBucket extends UniversalBucket implements IOreDictionaryEntry, IMMDObject {
@@ -84,9 +90,55 @@ public class ItemMMDBucket extends UniversalBucket implements IOreDictionaryEntr
             if (result != null) {
                 return result;
             }
+            return ActionResult.newResult(EnumActionResult.PASS, itemstack);
         }
 
-        return super.onItemRightClick(world, player, hand);
+        // clicked on a block?
+        RayTraceResult mop = this.rayTrace(world, player, false);
+
+        if(mop == null || mop.typeOfHit != RayTraceResult.Type.BLOCK)
+        {
+            return ActionResult.newResult(EnumActionResult.PASS, itemstack);
+        }
+
+        BlockPos clickPos = mop.getBlockPos();
+        // can we place liquid there?
+        if (world.isBlockModifiable(player, clickPos))
+        {
+            // the block adjacent to the side we clicked on
+            BlockPos targetPos = clickPos.offset(mop.sideHit);
+
+            // can the player place there?
+            if (player.canPlayerEdit(targetPos, mop.sideHit, itemstack))
+            {
+                // try placing liquid
+                FluidActionResult result = FluidUtil.tryPlaceFluid(player, world, targetPos, itemstack, fluidStack);
+                if (result.isSuccess() && !player.capabilities.isCreativeMode)
+                {
+                    // success!
+                    player.addStat(StatList.getObjectUseStats(this));
+
+                    itemstack.shrink(1);
+                    ItemStack drained = result.getResult();
+                    ItemStack emptyStack = !drained.isEmpty() ? drained.copy() : new ItemStack(this);
+
+                    // check whether we replace the item or add the empty one to the inventory
+                    if (itemstack.isEmpty())
+                    {
+                        return ActionResult.newResult(EnumActionResult.SUCCESS, emptyStack);
+                    }
+                    else
+                    {
+                        // add empty bucket to player inventory
+                        ItemHandlerHelper.giveItemToPlayer(player, emptyStack);
+                        return ActionResult.newResult(EnumActionResult.SUCCESS, itemstack);
+                    }
+                }
+            }
+        }
+
+        // couldn't place liquid there2
+        return ActionResult.newResult(EnumActionResult.FAIL, itemstack);
     }
 
     @SubscribeEvent // (priority = EventPriority.LOW) // low priority so other mods can handle their stuff first
