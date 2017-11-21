@@ -22,12 +22,12 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * @author Daniel Hazelton &lt;dshadowwolf@gmail.com&gt;
  */
 
-@Mod( modid = MMDBuckets.MODID,
-name = MMDBuckets.NAME,
-version = MMDBuckets.VERSION,
-dependencies = "required-after:forge@[14.21.0.2327,);required-after:basemetals;required-after:modernmetals;",
-acceptedMinecraftVersions = "[1.12,)" )
-
+@Mod(
+		modid = MMDBuckets.MODID,
+		name = MMDBuckets.NAME,
+		version = MMDBuckets.VERSION,
+		dependencies = "required-after:forge@[14.21.0.2327,);required-after:basemetals;after:modernmetals;",
+		acceptedMinecraftVersions = "[1.12,)")
 public class MMDBuckets {
 	@Instance
 	public static MMDBuckets instance;
