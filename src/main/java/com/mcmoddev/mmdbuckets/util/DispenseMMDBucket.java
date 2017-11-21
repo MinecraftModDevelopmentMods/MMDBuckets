@@ -7,16 +7,17 @@ import net.minecraftforge.fluids.DispenseFluidContainer;
 
 public class DispenseMMDBucket extends BehaviorDefaultDispenseItem {
 
-	private static final DispenseMMDBucket INSTANCE = new DispenseMMDBucket();
-	
-	private DispenseMMDBucket() {}
-	
-	public static DispenseMMDBucket getInstance() {
-		return INSTANCE;
-	}
+    private static final DispenseMMDBucket INSTANCE = new DispenseMMDBucket();
 
-	@Override
-	public ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
-		return DispenseFluidContainer.getInstance().dispenseStack(source, stack);
-	}
+    private DispenseMMDBucket() {
+    }
+
+    public static DispenseMMDBucket getInstance() {
+        return INSTANCE;
+    }
+
+    @Override
+    public ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
+        return DispenseFluidContainer.getInstance().dispenseStack(source, stack);
+    }
 }
