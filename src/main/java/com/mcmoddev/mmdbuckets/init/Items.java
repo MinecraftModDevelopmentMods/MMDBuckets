@@ -1,5 +1,6 @@
 package com.mcmoddev.mmdbuckets.init;
 
+import com.mcmoddev.lib.data.SharedStrings;
 import com.mcmoddev.lib.material.MMDMaterial;
 import com.mcmoddev.lib.material.MMDMaterial.MaterialType;
 import com.mcmoddev.mmdbuckets.items.ItemMMDBucket;
@@ -14,11 +15,12 @@ public class Items extends com.mcmoddev.lib.init.Items {
     public static final Fluid[] FLUIDS = {FluidRegistry.WATER, FluidRegistry.LAVA};
 
     public static void init() {
+    
         for (MMDMaterial mat : Materials.getAllMaterials()) {
             if (mat.getType() == MaterialType.METAL) {
                 if (!mat.getName().equals("iron") && !mat.hasItem("bucket")) {
                     ItemMMDBucket nb = new ItemMMDBucket(mat);
-                    mat.addNewItem("bucket", addItem(nb, "bucket", mat, com.mcmoddev.basemetals.init.ItemGroups.myTabs.itemsTab));
+                    mat.addNewItem("bucket", addItem(nb, "bucket", mat, com.mcmoddev.basemetals.init.ItemGroups.getTab(SharedStrings.TAB_ITEMS)));
                 }
             }
         }
