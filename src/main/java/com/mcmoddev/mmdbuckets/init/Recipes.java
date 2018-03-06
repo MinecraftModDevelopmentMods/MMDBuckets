@@ -34,7 +34,7 @@ public class Recipes extends com.mcmoddev.lib.init.Recipes {
             ItemStack bucket = new ItemStack(mat.getItem("bucket"));
 
             if (!bucket.isEmpty() && bucket.getItem() instanceof ItemMMDBucket) {
-                ShapedOreRecipe thisRecipe = new ShapedOreRecipe(new ResourceLocation("buckets"), bucket, "x x", " x ", 'x', Oredicts.INGOT + oreDictName);
+                ShapedOreRecipe thisRecipe = new ShapedOreRecipe(new ResourceLocation(String.format("bucket_of_%s", mat.getName())), bucket, "x x", " x ", 'x', Oredicts.INGOT + oreDictName);
                 thisRecipe.setRegistryName(oreDictName + "_bucket");
                 ev.getRegistry().register(thisRecipe);
             }
