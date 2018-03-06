@@ -163,7 +163,7 @@ curseforge {
     project {
         id = "282366"
         changelog = file("CHANGELOG.txt")
-        releaseType = "alpha"
+        releaseType = "beta"
         addGameVersion(project.mc_version)
         def projName = "MMD Buckets"
         def displayVersion = getVersion("VERSION", mod_file)

@@ -41,7 +41,7 @@ public class MMDBuckets {
     /**
      * Version Number, in SemVer format
      */
-    public static final String VERSION = "0.0.1-alpha2";
+    public static final String VERSION = "0.0.1-beta1";
 
     /**
      * base format for naming the proxies
