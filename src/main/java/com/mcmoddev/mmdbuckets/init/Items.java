@@ -43,7 +43,7 @@ public class Items extends com.mcmoddev.lib.init.Items {
     
     private static boolean mineToRegister(@Nonnull final Item it) {
     	return (it instanceof ItemMMDBucket) &&
-    			(it.getRegistryName().getResourceDomain().equalsIgnoreCase(MMDBuckets.MODID));
+    			(it.getRegistryName().getNamespace().equalsIgnoreCase(MMDBuckets.MODID));
     }
     
     private static Item mapper(@Nonnull final MMDMaterial mat) {

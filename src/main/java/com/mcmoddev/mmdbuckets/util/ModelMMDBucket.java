@@ -211,7 +211,7 @@ public final class ModelMMDBucket implements IModel {
 
         @Override
         public boolean accepts(ResourceLocation modelLocation) {
-            return modelLocation.getResourceDomain().equals(MMDBuckets.MODID) && modelLocation.getResourcePath().contains("full_bucket");
+            return modelLocation.getNamespace().equals(MMDBuckets.MODID) && modelLocation.getPath().contains("full_bucket");
         }
 
         @Override
