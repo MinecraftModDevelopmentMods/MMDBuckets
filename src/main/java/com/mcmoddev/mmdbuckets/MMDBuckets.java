@@ -24,7 +24,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
         modid = MMDBuckets.MODID,
         name = MMDBuckets.NAME,
         version = MMDBuckets.VERSION,
-        dependencies = "required-after:forge@[14.21.0.2327,);required-after:basemetals;after:modernmetals;",
+        dependencies = "required-after:forge@[14.21.1.2387,);required-after:basemetals;after:modernmetals;",
         acceptedMinecraftVersions = "[1.12,)")
 public class MMDBuckets {
     @Instance

@@ -26,7 +26,7 @@ public class Utils {
         float f5 = MathHelper.sin(-f * 0.017453292F);
         float f6 = f3 * f4;
         float f7 = f2 * f4;
-        Vec3d vec31 = vec3.addVector((double) f6 * distance, (double) f5 * distance, (double) f7 * distance);
+        Vec3d vec31 = vec3.add((double) f6 * distance, (double) f5 * distance, (double) f7 * distance);
         return world.rayTraceBlocks(vec3, vec31, p1, p2, p3);
     }
 
