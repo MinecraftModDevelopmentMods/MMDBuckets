@@ -1,6 +1,6 @@
 package com.mcmoddev.mmdbuckets.proxy;
 
-import com.mcmoddev.basemetals.init.Materials;
+import com.mcmoddev.lib.init.Materials;
 import com.mcmoddev.lib.material.MMDMaterial;
 import com.mcmoddev.mmdbuckets.items.ItemMMDBucket;
 import com.mcmoddev.mmdbuckets.util.ModelMMDBucket;

@@ -24,7 +24,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
         modid = MMDBuckets.MODID,
         name = MMDBuckets.NAME,
         version = MMDBuckets.VERSION,
-        dependencies = "required-after:forge@[14.21.1.2387,);required-after:basemetals;after:modernmetals;",
+        dependencies = "required-after:forge@[14.21.1.2387,);required-after:mmdlib;after:basemetals;after:modernmetals;",
         acceptedMinecraftVersions = "[1.12,)")
 public class MMDBuckets {
     @Instance
@@ -41,7 +41,7 @@ public class MMDBuckets {
     /**
      * Version Number, in SemVer format
      */
-    public static final String VERSION = "0.0.1-alpha2";
+    public static final String VERSION = "0.0.1-beta1";
 
     /**
      * base format for naming the proxies
@@ -51,7 +51,7 @@ public class MMDBuckets {
     @SidedProxy(clientSide = PROXY_BASE + "ClientProxy", serverSide = PROXY_BASE + "ServerProxy")
     public static CommonProxy proxy;
 
-    public static Logger logger = LogManager.getFormatterLogger(MODID);
+    public static Logger logger = LogManager.getLogger(MODID);
 
 
     @EventHandler
