@@ -175,7 +175,8 @@ curseforge {
         mainArtifact(jar) {
             displayName = "$projName $displayVersion"
             relations {
-                requiredLibrary "base-metals"
+		requiredLibrary "mmdlib"
+                optionalLibrary "base-metals"
                 optionalLibrary "base-minerals"
                 optionalLibrary "modern-metals"
 		optionalLibrary "nether-metals"
