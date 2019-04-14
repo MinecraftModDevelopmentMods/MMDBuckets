@@ -65,7 +65,7 @@ if (secretFile.exists()) {
 }
 
 minecraft {
-    version = "1.12.2-14.23.4.2705"
+    version = "1.12.2-14.23.5.2825"
     runDir = "run"
     mappings = "stable_39"
 }
@@ -90,7 +90,9 @@ repositories {
 }
 
 dependencies {
-    deobfCompile "com.mcmoddev:BaseMetals:${mc_version}-${bme_version}"
+  deobfProvided ("com.mcmoddev:MMDLib:${mc_version_short}-${mmdlib_version}:deobf") {
+  	exclude group: 'mezz.jei'
+  }
 }
 
 processResources {
@@ -172,7 +174,8 @@ curseforge {
         mainArtifact(jar) {
             displayName = "$projName $displayVersion"
             relations {
-                requiredLibrary "base-metals"
+		requiredLibrary "mmdlib"
+                optionalLibrary "base-metals"
                 optionalLibrary "base-minerals"
                 optionalLibrary "modern-metals"
 		optionalLibrary "nether-metals"

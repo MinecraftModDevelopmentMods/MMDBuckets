@@ -4,15 +4,18 @@ import com.mcmoddev.lib.data.Names;
 import com.mcmoddev.lib.material.MMDMaterial;
 import com.mcmoddev.lib.util.Config.Options;
 import com.mcmoddev.lib.util.Oredicts;
+import com.mcmoddev.mmdbuckets.MMDBuckets;
 import com.mcmoddev.mmdbuckets.items.ItemMMDBucket;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
+@Mod.EventBusSubscriber(modid=MMDBuckets.MODID)
 public class Recipes extends com.mcmoddev.lib.init.Recipes {
     public static void init() {
         for (MMDMaterial mat : Materials.getAllMaterials()) {
